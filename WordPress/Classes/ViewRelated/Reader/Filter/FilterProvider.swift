@@ -150,7 +150,7 @@ extension ReaderSiteTopic {
                         cell.detailTextLabel?.text = topic.siteURL
 
                         if FeatureFlag.unseenPostCount.enabled && topic.unseenCount > 0 {
-                            buildUnseenPostCountView(topic, with: cell)
+                            addUnseenPostCount(topic, with: cell)
                         }
                     })
                 }
@@ -162,40 +162,30 @@ extension ReaderSiteTopic {
         fetchFollowedSites(completion: completionBlock)
     }
 
-    /// Build the unseen posts count for the accessoryView.
+    /// Adds a custom accessory view displaying the unseen post count.
     ///
-    private static func buildUnseenPostCountView(_ topic: ReaderSiteTopic, with cell: UITableViewCell) {
-//        let unseenCountView = UIView()
-//        unseenCountView.layer.cornerRadius = 15.0
-//        unseenCountView.backgroundColor = .systemPink // UIColor.tertiaryFill
-//
-//        let countLabel = UILabel()
-//        countLabel.font = WPStyleGuide.subtitleFont()
-//        countLabel.textColor = UIColor.text
-//        countLabel.backgroundColor = .systemPink
-//        countLabel.layer.cornerRadius = 15.0
-//        countLabel.layer.borderWidth = 2.0
-//        countLabel.layer.borderColor = UIColor.systemPink.cgColor
-//        countLabel.translatesAutoresizingMaskIntoConstraints = true
-//        countLabel.text = String(topic.unseenCount)
-//        countLabel.sizeToFit()
-//
-//        unseenCountView.addSubview(countLabel)
-//
-//        let accessoryContainer = UIView()
-//        accessoryContainer.addSubview(unseenCountView)
+    private static func addUnseenPostCount(_ topic: ReaderSiteTopic, with cell: UITableViewCell) {
 
-        let unseenCount = UIButton(type: .custom)
-        unseenCount.layer.cornerRadius = 15.0
-        unseenCount.backgroundColor = UIColor.tertiaryFill
-        unseenCount.clipsToBounds = true
-//        unseenCount.tintColor = .systemPink
-//        unseenCount.titleLabel?.textColor = .systemPink
-        unseenCount.setTitle(String(topic.unseenCount), for: .normal)
-        unseenCount.titleLabel?.font = WPStyleGuide.subtitleFont()
-        unseenCount.sizeToFit()
+        // Create background view
+        let unseenCountView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: UnseenCountConstants.viewHeight))
+        unseenCountView.layer.cornerRadius = UnseenCountConstants.cornerRadius
+        unseenCountView.backgroundColor =  .tertiaryFill
 
-        cell.contentView
+        // Create count label
+        let countLabel = UILabel()
+        countLabel.font = WPStyleGuide.subtitleFont()
+        countLabel.textColor = .text
+        countLabel.backgroundColor = .clear
+        countLabel.text = topic.unseenCount.abbreviatedString()
+        countLabel.sizeToFit()
+
+        // Resize views
+        unseenCountView.frame.size.width = countLabel.frame.width + UnseenCountConstants.labelPadding
+        countLabel.center = unseenCountView.center
+
+        // Display in cell's accessory view
+        unseenCountView.addSubview(countLabel)
+        cell.accessoryView = unseenCountView
     }
 
     /// Fetch sites from remote service
@@ -220,6 +210,11 @@ extension ReaderSiteTopic {
         completion(.success(sites))
     }
 
+    private struct UnseenCountConstants {
+        static let cornerRadius: CGFloat = 15
+        static let viewHeight = 30
+        static let labelPadding: CGFloat = 20
+    }
 }
 
 extension ReaderTagTopic {
