@@ -167,7 +167,7 @@ extension ReaderSiteTopic {
     private static func addUnseenPostCount(_ topic: ReaderSiteTopic, with cell: UITableViewCell) {
 
         // Create background view
-        let unseenCountView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: UnseenCountConstants.viewHeight))
+        let unseenCountView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: UnseenCountConstants.viewSize))
         unseenCountView.layer.cornerRadius = UnseenCountConstants.cornerRadius
         unseenCountView.backgroundColor =  .tertiaryFill
 
@@ -180,7 +180,7 @@ extension ReaderSiteTopic {
         countLabel.sizeToFit()
 
         // Resize views
-        unseenCountView.frame.size.width = countLabel.frame.width + UnseenCountConstants.labelPadding
+        unseenCountView.frame.size.width = max(countLabel.frame.width + UnseenCountConstants.labelPadding, UnseenCountConstants.viewSize)
         countLabel.center = unseenCountView.center
 
         // Display in cell's accessory view
@@ -212,7 +212,7 @@ extension ReaderSiteTopic {
 
     private struct UnseenCountConstants {
         static let cornerRadius: CGFloat = 15
-        static let viewHeight = 30
+        static let viewSize: CGFloat = 30
         static let labelPadding: CGFloat = 20
     }
 }
